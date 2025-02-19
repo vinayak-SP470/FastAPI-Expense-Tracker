@@ -1,4 +1,5 @@
 EXPENSE TRACKER API
+
 This is a FastAPI-based Expense Tracker application that provides features for user authentication, expense management, and currency exchange.
 
 Features
