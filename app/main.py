@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from app.routers import expenses, users, currency
 from fastapi.openapi.utils import get_openapi
 
@@ -32,3 +34,19 @@ def custom_openapi():
     return app.openapi_schema
 
 app.openapi = custom_openapi
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    first_error = exc.errors()[0]  
+    field = ".".join(str(loc) for loc in first_error["loc"][1:])  
+    error_message = first_error["msg"]  
+
+    return JSONResponse(
+        status_code=400,
+        content={
+            "error": field,
+            "success": False,
+            "statuscode": 400,
+            "message": error_message
+        }
+    )
